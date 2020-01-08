@@ -15,36 +15,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import car.shop.kaiser.myObj.*;
+import car.shop.kaiser.myObj.CarManufacturer;
+import car.shop.kaiser.myObj.CarModel;
+import car.shop.kaiser.services.OffersService;
 
 @Controller
 public class HomeController {
     @Autowired
-    private BlogRepository blogRepository;
-    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+    private OffersService offersService;
 
     @RequestMapping("/")
     public String home(Model model) {
-        logger.info("You can log something");
-        List<BlogPost> blogPost;
-        try {
-            blogPost = blogRepository.getAllPosts();
 
-        } catch (SQLException e) {
-            blogPost = new ArrayList<>();
-        }
-        System.out.println(blogPost.get(0).getId());
+        CarManufacturer car_manufactorer = offersService.getCarManufacturer(2);
+        CarModel car_model = offersService.getCarModel(2);
 
-        model.addAttribute("blogPost", blogPost);
-        model.addAttribute("page", "home");
+        model.addAttribute("car_manufactorer", car_manufactorer);
+        model.addAttribute("car_model", car_model);
 
-        return "layout";
-    }
-
-    @PostMapping("/newpost")
-    public String newPost(BlogPost post) throws SQLException {
-        blogRepository.createPost(post);
-        return "redirect:/";
+        return StaticFun.generate(model, "home");
     }
 
 }
