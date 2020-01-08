@@ -1,12 +1,13 @@
 package car.shop.kaiser.myObj;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.activation.DataSource;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -14,7 +15,7 @@ import java.util.List;
 import car.shop.kaiser.myObj.BlogPost;
 
 @Repository
-class BlogRepository {
+public class BlogRepository {
     @Autowired
     private DataSource dataSource;
 
@@ -23,7 +24,7 @@ class BlogRepository {
 
         String sql = "select * from blog_post";
 
-        try (Connection con = ((Statement) dataSource).getConnection();
+        try (Connection con = dataSource.getConnection();
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery(sql);) {
 
@@ -39,4 +40,31 @@ class BlogRepository {
 
         return posts;
     }
+
+    public void createPost(BlogPost post) throws SQLException {
+        String sql = "insert into blog_post(title, content) values(?, ?)";
+
+        try (Connection con = dataSource.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, post.getTitle());
+            ps.setString(2, post.getContent());
+
+            ps.executeUpdate();
+
+        }
+    }
+
+    public void deletePost(Long id) throws SQLException {
+        // String sql = "delete from blog_post where (id=?)";
+        // System.out.println(id);
+        // try (Connection con = dataSource.getConnection(); PreparedStatement ps =
+        // con.prepareStatement(sql)) {
+
+        // ps.setLong(1, id);
+
+        // ps.executeUpdate();
+
+        // }
+    }
+
 }
