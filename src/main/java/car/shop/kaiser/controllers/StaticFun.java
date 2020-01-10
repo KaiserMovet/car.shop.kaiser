@@ -13,4 +13,10 @@ class StaticFun {
         model.addAttribute("title", title);
         return "layout";
     }
+
+    public static int roundUp(int num, int divisor) {
+        if (num == 0)
+            return 1;
+        return (num + divisor - 1) / divisor;
+    }
 }

@@ -2,9 +2,11 @@ package car.shop.kaiser.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigInteger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
@@ -81,27 +83,41 @@ public class OffersService {
         return query.getResultList();
     }
 
-    public List<Offer> getOffers(OfferFilter filter) {
+    public int countOffers() {
+        Query query = em.createNativeQuery("SELECT COUNT(*) FROM Offer");
+        return ((BigInteger) query.getSingleResult()).intValue();
+    }
 
-        String jpql = "select cm from Offer cm ";
-        String where = "where 1 = 1 and ";
+    public List<Offer> getOffers(int page, int perPage) {
+        String jpql = "select cm from Offer cm order by cm.id";
 
-        where += "cm.year >= :minyear and ";
-        where += "cm.year <= :maxyear and ";
-        where += "cm.desc in description and ";
-        if(filter.getManufacturer() != -1){
-            where += "cm."
-        }
-        jpql += "order by cm.id";
+        TypedQuery<Offer> query = em.createQuery(jpql, Offer.class).setFirstResult(page * perPage)
+                .setMaxResults(perPage);
 
-        TypedQuery<Offer> query = em.createQuery(jpql, Offer.class);
-
-        query.setParameter("minyear", filter.getMinYear());
-        query.setParameter("minyear", filter.getMinYear());
-
-        System.out.println(jpql);
         return query.getResultList();
     }
+
+    // public List<Offer> getOffers(OfferFilter filter) {
+
+    // String jpql = "select cm from Offer cm ";
+    // String where = "where 1 = 1 and ";
+
+    // where += "cm.year >= :minyear and ";
+    // where += "cm.year <= :maxyear and ";
+    // where += "cm.desc in description and ";
+    // if(filter.getManufacturer() != -1){
+    // where += "cm."
+    // }
+    // jpql += "order by cm.id";
+
+    // TypedQuery<Offer> query = em.createQuery(jpql, Offer.class);
+
+    // query.setParameter("minyear", filter.getMinYear());
+    // query.setParameter("minyear", filter.getMinYear());
+
+    // System.out.println(jpql);
+    // return query.getResultList();
+    // }
 
     public List<Offer> getOffersByModel(int modelId) {
         String jpql = "select cm from Offer cm where cm.model_id = :id order by cm.id";
@@ -127,6 +143,7 @@ public class OffersService {
 
     public Offer createOffer(Offer offer) {
         System.out.println("DODAWANIE OFERTY");
+        System.out.println(offer.toString());
         em.persist(offer);
         return offer;
     }

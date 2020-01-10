@@ -31,6 +31,7 @@ import car.shop.kaiser.services.OffersService;
 public class HomeController {
     @Autowired
     private OffersService offersService;
+    Integer offersPerPage = 5;
 
     @RequestMapping("/")
     public String home(Model model) {
@@ -89,21 +90,28 @@ public class HomeController {
 
     @GetMapping("/offerslist")
     public String offerList(Model model) {
-        List<Offer> offers = offersService.getOffers();
-        OfferFilter offerFilter = new OfferFilter();
-        model.addAttribute("offerFilter", offerFilter);
+        return offerList(model, 1);
+    }
+
+    @GetMapping("/offerslist/{page}")
+    public String offerList(Model model, @PathVariable("page") Integer page) {
+        List<Offer> offers = offersService.getOffers(page - 1, offersPerPage);
+        model.addAttribute("page_num", (Integer) page);
+        model.addAttribute("pages", StaticFun.roundUp(offersService.countOffers(), offersPerPage));
         model.addAttribute("offers", offers);
+
         return StaticFun.generate(model, "offersList", "Lista furek");
     }
 
-    @PostMapping("/offerslist")
-    public String offerList(Model model, @Valid OfferFilter offerFilter, BindingResult binding) {
-        List<Offer> offers = offersService.getOffers(offerFilter);
-        model.addAttribute("offers", offers);
-        model.addAttribute("offerFilter", offerFilter);
-        System.out.println("POOOOOOST");
-        return StaticFun.generate(model, "offersList", "Lista furek");
-    }
+    // @PostMapping("/offerslist")
+    // public String offerList(Model model, @Valid OfferFilter offerFilter,
+    // BindingResult binding) {
+    // List<Offer> offers = offersService.getOffers(offerFilter);
+    // model.addAttribute("offers", offers);
+    // model.addAttribute("offerFilter", offerFilter);
+    // System.out.println("POOOOOOST");
+    // return StaticFun.generate(model, "offersList", "Lista furek");
+    // }
 
     @GetMapping("/deleteoffer/{id}")
     public String deleteOffer(Model model, @PathVariable("id") Integer id) {
@@ -145,7 +153,6 @@ public class HomeController {
 
             return StaticFun.generate(model, "offerForm", "Edytuj furkę");
         }
-
         offersService.saveOffer(offer);
 
         return "redirect:/offer/" + offer.getId();

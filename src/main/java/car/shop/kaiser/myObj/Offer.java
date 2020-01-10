@@ -25,6 +25,16 @@ import javax.validation.constraints.Size;
 @Table(name = "offer")
 public class Offer {
 
+    @Override
+    public String toString() {
+        return "{" + " id='" + getId() + "'" + ", title='" + getTitle() + "'" + ", year='" + getYear() + "'"
+                + ", mileage='" + getMileage() + "'" + ", engineSize='" + getEngineSize() + "'" + ", enginePower='"
+                + getEnginePower() + "'" + ", doors='" + getDoors() + "'" + ", colour='" + getColour() + "'"
+                + ", description='" + getDescription() + "'" + ", price='" + getPrice() + "'" + ", model='" + getModel()
+                + "'" + ", bodyStyle='" + getBodyStyle() + "'" + ", fuelType='" + getFuelType() + "'" + ", created='"
+                + getCreated() + "'" + "}";
+    }
+
     public Offer() {
     }
 
@@ -40,7 +50,7 @@ public class Offer {
         this.description = "Automatic car";
         this.price = new Random().nextInt(1000000);
         this.setModel(new CarModel());
-        this.model.setId(1);
+        this.model.setId(new Random().nextInt(50));
         this.setBodyStyle(new BodyStyle());
         this.bodyStyle.setId(1);
         this.setFuelType(new FuelType());
@@ -120,7 +130,6 @@ public class Offer {
     private FuelType fuelType;
 
     @Column(name = "created")
-    @NotNull
     private String created;
 
     public Integer getId() {
